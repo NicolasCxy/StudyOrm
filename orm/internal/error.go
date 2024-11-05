@@ -16,3 +16,7 @@ func NewUnSupportedExpression(expr any) error {
 func NewNotFoundField(field string) error {
 	return fmt.Errorf("sql生成失败，不包含字段 %v", field)
 }
+
+func NewErrInvalidTagContent(pair string) error {
+	return fmt.Errorf("无效的tag： %s", pair)
+}

@@ -13,13 +13,7 @@ type Selector[T any] struct {
 	db    *DB
 }
 
-func NewSelector[T any]() *Selector[T] {
-
-	db, err := NewDB()
-	if err != nil {
-		panic(err)
-	}
-
+func NewSelector[T any](db *DB) *Selector[T] {
 	return &Selector[T]{db: db}
 }
 
