@@ -4,6 +4,7 @@ import (
 	"JoeyOrm/orm/internal"
 	"JoeyOrm/orm/reflect"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -257,6 +258,46 @@ func TestRegistry_Build(t *testing.T) {
 				return
 			}
 			assert.Equal(t, tc.wantModel, m)
+		})
+	}
+}
+
+func TestCustomField_Build(t *testing.T) {
+	testCases := []struct {
+		name        string
+		val         any
+		option      reflect.ModelOpt
+		field       string
+		wantColName string
+		wantError   error
+	}{ //自定义表名和列名
+		{
+			name:        "table_name_code",
+			val:         &CustomTableName{},
+			option:      reflect.ModelWithColumnName("FirstName", ""),
+			field:       "FirstName",
+			wantColName: "",
+		},
+		{
+			name:      "invalid_field",
+			val:       &CustomTableName{},
+			option:    reflect.ModelWithColumnName("FirstNameXXX", ""),
+			wantError: internal.NewNotFoundField("FirstNameXXX"),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			register := reflect.NewRegister()
+			m, err := register.Register(tc.val, tc.option)
+			assert.Equal(t, tc.wantError, err)
+			if err != nil {
+				return
+			}
+
+			fd, ok := m.FieldMap[tc.field]
+			require.True(t, ok)
+			assert.Equal(t, tc.wantColName, fd.ColName)
 		})
 	}
 }

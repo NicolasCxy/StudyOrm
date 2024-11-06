@@ -21,6 +21,18 @@ func ModelWithTableName(tableName string) ModelOpt {
 	}
 }
 
+func ModelWithColumnName(field string, columnName string) ModelOpt {
+	return func(model *Model) error {
+		fd, ok := model.FieldMap[field]
+		if !ok {
+			return internal.NewNotFoundField(field)
+		}
+
+		fd.ColName = columnName
+		return nil
+	}
+}
+
 type Registry interface {
 	Get(val any) (*Model, error)
 	Register(val any, opts ...ModelOpt) (*Model, error)
@@ -102,7 +114,7 @@ func (r *Register) ParseModel(entity any) (*Model, error) {
 	typ := reflect.TypeOf(entity)
 
 	if typ.Kind() != reflect.Ptr || typ.Elem().Kind() != reflect.Struct {
-		return nil, internal.NewUnSupportedExpression(typ)
+		return nil, internal.NewUnSupportedExpression(entity)
 	}
 
 	typ = typ.Elem()
