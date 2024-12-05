@@ -20,3 +20,7 @@ func NewNotFoundField(field string) error {
 func NewErrInvalidTagContent(pair string) error {
 	return fmt.Errorf("无效的tag： %s", pair)
 }
+
+func NewErrorParsUnSupported(expr any) error {
+	return fmt.Errorf("json解析只支持string，[]byte类型，不支持： %v", expr)
+}
